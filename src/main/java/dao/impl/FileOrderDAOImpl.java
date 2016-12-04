@@ -24,9 +24,9 @@ import java.util.stream.Collectors;
 @Singleton
 public class FileOrderDAOImpl implements OrderDAO {
 
-    private Map<String, Map<String, BigDecimal>> food;
     private static final Logger LOGGER = LoggerFactory.getLogger(FileOrderDAOImpl.class);
 
+    private Map<String, Map<String, BigDecimal>> food;
     private Map<String, List<Map<String, BigDecimal>>> allOrders;
 
     public FileOrderDAOImpl() throws Exception {
@@ -37,12 +37,24 @@ public class FileOrderDAOImpl implements OrderDAO {
     private void initializeFood() throws Exception {
         food = new HashMap<>();
 
+        File menuFolder = new File("menu");
+        if (!menuFolder.exists()) {
+            LOGGER.error("Menu folder does not exist");
+            throw new IllegalStateException("Menu folder does not exist");
+        }
+
         Collection<File> menuFiles = FileUtils.listFiles(
-                new File(getClass().getClassLoader().getResource("menu").toURI()),
+                menuFolder,
                 new String[]{"properties"},
                 false);
 
+        if (menuFiles.isEmpty()) {
+            LOGGER.error("Menu folder is empty");
+            throw new IllegalStateException("Menu folder is empty");
+        }
+
         for (File menuFile : menuFiles) {
+            LOGGER.info("Initializing: " + menuFile);
             String menuName = FilenameUtils.getBaseName(menuFile.getAbsolutePath());
             Properties menu = new Properties();
             menu.load(new InputStreamReader(new FileInputStream(menuFile), "UTF-8"));
