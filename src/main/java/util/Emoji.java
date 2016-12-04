@@ -3,7 +3,9 @@ package util;
 public enum Emoji {
     TOILET('\uD83D', '\uDEBD'),
     BACK_WITH_LEFTWARDS_ARROW_ABOVE('\uD83D', '\uDD19'),
-    FILE_FOLDER('\uD83D', '\uDCC1');
+    FILE_FOLDER('\uD83D', '\uDCC1'),
+    SUSHI('\uD83C', '\uDF63'),
+    CASH('\uD83D', '\uDCB0');
 
     Character firstChar;
     Character secondChar;

@@ -8,23 +8,9 @@ public interface OrderDAO {
 
     String getOrder();
 
-    Map<String, BigDecimal> getGarnir();
-
-    Map<String, BigDecimal> getGunkan();
-
-    Map<String, BigDecimal> getHotMaki();
-
-    Map<String, BigDecimal> getMiniRolls();
-
-    Map<String, BigDecimal> getNigiri();
-
-    Map<String, BigDecimal> getNoriMaki();
-
-    Map<String, BigDecimal> getSoups();
-
-    Map<String, BigDecimal> getUraMaki();
-
-    Map<String, BigDecimal> getFood();
     boolean removeOrder(String customer);
+
     void removeAllOrders();
+
+    Map<String, Map<String, BigDecimal>> getAllFood();
 }

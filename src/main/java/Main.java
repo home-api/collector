@@ -1,7 +1,7 @@
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import bot.SushiBot;
-import module.Configuration;
+import bot.CollectorBot;
+import configuration.Configuration;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
 
@@ -17,8 +17,7 @@ public class Main {
 
         ApiContextInitializer.init();
         TelegramBotsApi api = new TelegramBotsApi();
-        SushiBot instance = injector.getInstance(SushiBot.class);
-        instance.initialize();
+        CollectorBot instance = injector.getInstance(CollectorBot.class);
         api.registerBot(instance);
     }
 

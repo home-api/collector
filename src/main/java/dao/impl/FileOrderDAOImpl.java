@@ -1,13 +1,18 @@
 package dao.impl;
 
+import com.google.inject.Singleton;
 import dao.OrderDAO;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -16,59 +21,41 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Singleton
 public class FileOrderDAOImpl implements OrderDAO {
 
-    private Map<String, BigDecimal> food;
+    private Map<String, Map<String, BigDecimal>> food;
     private static final Logger LOGGER = LoggerFactory.getLogger(FileOrderDAOImpl.class);
 
-    private Map<String, BigDecimal> garnir;
-    private Map<String, BigDecimal> gunkan;
-    private Map<String, BigDecimal> hotMaki;
-    private Map<String, BigDecimal> miniRolls;
-    private Map<String, BigDecimal> nigiri;
-    private Map<String, BigDecimal> noriMaki;
-    private Map<String, BigDecimal> soups;
-    private Map<String, BigDecimal> uraMaki;
-    private Map<String, List<Map<String, BigDecimal>>> orders;
+    private Map<String, List<Map<String, BigDecimal>>> allOrders;
 
     public FileOrderDAOImpl() throws Exception {
-        orders = new HashMap<>();
-        initialize();
+        allOrders = new HashMap<>();
+        initializeFood();
     }
 
-    protected void initialize() throws Exception {
-        garnir = initializeFood("garnir");
-        gunkan = initializeFood("gunkan");
-        hotMaki = initializeFood("hotMaki");
-        miniRolls = initializeFood("miniRolls");
-        nigiri = initializeFood("nigiri");
-        noriMaki = initializeFood("noriMaki");
-        soups = initializeFood("soups");
-        uraMaki = initializeFood("uraMaki");
-
+    private void initializeFood() throws Exception {
         food = new HashMap<>();
-        food.putAll(garnir);
-        food.putAll(gunkan);
-        food.putAll(hotMaki);
-        food.putAll(miniRolls);
-        food.putAll(nigiri);
-        food.putAll(noriMaki);
-        food.putAll(soups);
-        food.putAll(uraMaki);
-    }
 
-    private Map<String, BigDecimal> initializeFood(String set) throws IOException {
-        Properties foodNameProps = new Properties();
-        foodNameProps.load(new InputStreamReader(
-                getClass().getClassLoader().getResourceAsStream(set + ".properties"), "UTF-8"));
-        return foodNameProps.entrySet().stream().collect(
-                Collectors.toMap(e -> (String) e.getKey(), e -> new BigDecimal((String) e.getValue())));
+        Collection<File> menuFiles = FileUtils.listFiles(
+                new File(getClass().getClassLoader().getResource("menu").toURI()),
+                new String[]{"properties"},
+                false);
+
+        for (File menuFile : menuFiles) {
+            String menuName = FilenameUtils.getBaseName(menuFile.getAbsolutePath());
+            Properties menu = new Properties();
+            menu.load(new InputStreamReader(new FileInputStream(menuFile), "UTF-8"));
+            Map<String, BigDecimal> options = menu.entrySet().stream().collect(
+                    Collectors.toMap(e -> (String) e.getKey(), e -> new BigDecimal((String) e.getValue())));
+            food.put(menuName, options);
+        }
     }
 
     @Override
     public boolean addOrder(String customer, String order) {
         LOGGER.info(customer + " is adding order " + order);
-        BigDecimal price = food.get(order);
+        BigDecimal price = findPrice(order);
         if (price == null) {
             LOGGER.info("Price for order " + order + " has not been found");
             return false;
@@ -77,11 +64,11 @@ public class FileOrderDAOImpl implements OrderDAO {
         HashMap<String, BigDecimal> customerOrder = new HashMap<>();
         customerOrder.put(order, price);
 
-        if (orders.containsKey(customer)) {
-            List<Map<String, BigDecimal>> customerOrders = orders.get(customer);
+        if (allOrders.containsKey(customer)) {
+            List<Map<String, BigDecimal>> customerOrders = allOrders.get(customer);
             customerOrders.add(customerOrder);
         } else {
-            orders.put(customer, new ArrayList<>(Collections.singletonList(customerOrder)));
+            allOrders.put(customer, new ArrayList<>(Collections.singletonList(customerOrder)));
         }
 
         LOGGER.info(order + " with price " + price + " has been added for customer " + customer);
@@ -89,24 +76,43 @@ public class FileOrderDAOImpl implements OrderDAO {
         return true;
     }
 
+    private BigDecimal findPrice(String order) {
+        for (Map.Entry<String, Map<String, BigDecimal>> group : food.entrySet()) {
+            for (Map.Entry<String, BigDecimal> food : group.getValue().entrySet()) {
+                if (food.getKey().equals(order)) {
+                    return food.getValue();
+                }
+            }
+        }
+        return null;
+    }
+
     @Override
     public String getOrder() {
-        LOGGER.info("getting sum of all orders...");
+        LOGGER.info("getting sum of all allOrders...");
         StringBuilder response = new StringBuilder("Заказ\n\n");
-        Set<Map.Entry<String, List<Map<String, BigDecimal>>>> entries = orders.entrySet();
+        Set<Map.Entry<String, List<Map<String, BigDecimal>>>> userOrders = allOrders.entrySet();
         BigDecimal sum = new BigDecimal(0.0);
-        for (Map.Entry<String, List<Map<String, BigDecimal>>> entry : entries) {
-            response.append(entry.getKey());
+        Map<String, Integer> groupedSushi = new HashMap<>();
+        for (Map.Entry<String, List<Map<String, BigDecimal>>> userOrder : userOrders) {
+            response.append(userOrder.getKey());
             response.append(": ");
-            List<Map<String, BigDecimal>> customerOrders = entry.getValue();
+            List<Map<String, BigDecimal>> orders = userOrder.getValue();
             StringBuilder customerOrderString = new StringBuilder();
             BigDecimal customerSum = new BigDecimal(0.0);
-            for (Map<String, BigDecimal> customerOrder : customerOrders) {
+            for (Map<String, BigDecimal> customerOrder : orders) {
                 Set<Map.Entry<String, BigDecimal>> sushies = customerOrder.entrySet();
                 for (Map.Entry<String, BigDecimal> sushi : sushies) {
-                    String value = sushi.getKey() + "(" + sushi.getValue() + ")";
+                    String sushiName = sushi.getKey();
+                    String value = sushiName + "(" + sushi.getValue() + ")";
                     customerOrderString.append(customerOrderString.length() > 0 ? ", " + value : value);
                     customerSum = customerSum.add(sushi.getValue());
+
+                    if (groupedSushi.containsKey(sushiName)) {
+                        groupedSushi.put(sushiName, groupedSushi.get(sushiName) + 1);
+                    } else {
+                        groupedSushi.put(sushiName, 1);
+                    }
                 }
             }
             sum = sum.add(customerSum);
@@ -121,58 +127,36 @@ public class FileOrderDAOImpl implements OrderDAO {
         response.append("Итого: ");
         response.append(sum);
         response.append(" рублей");
+        response.append(" (");
+
+        String allPositions = groupedSushi.entrySet().stream()
+                .map(e -> e.getKey() + " - " + e.getValue())
+                .collect(Collectors.joining(", "));
+        response.append(allPositions);
+
+        response.append(")");
         LOGGER.info("Orders sum has been calculated: " + sum);
         return response.toString();
     }
 
     @Override
     public boolean removeOrder(String customer) {
-        LOGGER.info(customer + " is removing its orders...");
-        List<Map<String, BigDecimal>> oldOrders = orders.remove(customer);
+        LOGGER.info(customer + " is removing its allOrders...");
+        List<Map<String, BigDecimal>> oldOrders = allOrders.remove(customer);
         boolean wereOrderPresent = oldOrders != null;
-        LOGGER.info(wereOrderPresent ? customer + " has removed its orders" : customer + " have had no orders");
+        LOGGER.info(wereOrderPresent ? customer + " has removed its allOrders" : customer + " have had no allOrders");
         return wereOrderPresent;
     }
 
     @Override
     public void removeAllOrders() {
-        orders.clear();
+        allOrders.clear();
         LOGGER.info("All order have been removed");
     }
 
-    public Map<String, BigDecimal> getGarnir() {
-        return garnir;
-    }
-
-    public Map<String, BigDecimal> getGunkan() {
-        return gunkan;
-    }
-
-    public Map<String, BigDecimal> getHotMaki() {
-        return hotMaki;
-    }
-
-    public Map<String, BigDecimal> getMiniRolls() {
-        return miniRolls;
-    }
-
-    public Map<String, BigDecimal> getNigiri() {
-        return nigiri;
-    }
-
-    public Map<String, BigDecimal> getNoriMaki() {
-        return noriMaki;
-    }
-
-    public Map<String, BigDecimal> getSoups() {
-        return soups;
-    }
-
-    public Map<String, BigDecimal> getUraMaki() {
-        return uraMaki;
-    }
-
-    public Map<String, BigDecimal> getFood() {
+    @Override
+    public Map<String, Map<String, BigDecimal>> getAllFood() {
         return food;
     }
+
 }
