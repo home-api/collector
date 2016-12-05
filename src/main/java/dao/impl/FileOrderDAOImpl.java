@@ -139,14 +139,13 @@ public class FileOrderDAOImpl implements OrderDAO {
         response.append("Итого: ");
         response.append(sum);
         response.append(" рублей");
-        response.append(" (");
+        response.append("\n");
 
         String allPositions = groupedSushi.entrySet().stream()
                 .map(e -> e.getKey() + " - " + e.getValue())
-                .collect(Collectors.joining(", "));
+                .collect(Collectors.joining("\n"));
         response.append(allPositions);
 
-        response.append(")");
         LOGGER.info("Orders sum has been calculated: " + sum);
         return response.toString();
     }
