@@ -7,12 +7,20 @@ import command.impl.MenuCommand;
 import dao.OrderDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.telegram.telegrambots.api.methods.AnswerInlineQuery;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
+import org.telegram.telegrambots.api.objects.inlinequery.InlineQuery;
+import org.telegram.telegrambots.api.objects.inlinequery.inputmessagecontent.InputTextMessageContent;
+import org.telegram.telegrambots.api.objects.inlinequery.result.InlineQueryResult;
+import org.telegram.telegrambots.api.objects.inlinequery.result.InlineQueryResultArticle;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -46,6 +54,11 @@ public class CollectorBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         cleanOutdatedOrders();
 
+        if (update.hasInlineQuery()) {
+            handleInlineQuery(update.getInlineQuery());
+            return;
+        }
+
         if (!update.hasMessage()) {
             return;
         }
@@ -66,6 +79,42 @@ public class CollectorBot extends TelegramLongPollingBot {
             orderDAO.removeAllOrders();
             date = currentDate;
         }
+    }
+
+    private void handleInlineQuery(InlineQuery inlineQuery) {
+        String query = inlineQuery.getQuery();
+        if (!query.isEmpty()) {
+            try {
+                answerInlineQuery(convertResultsToResponse(inlineQuery));
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static AnswerInlineQuery convertResultsToResponse(InlineQuery inlineQuery) {
+        AnswerInlineQuery answerInlineQuery = new AnswerInlineQuery();
+        answerInlineQuery.setInlineQueryId(inlineQuery.getId());
+        answerInlineQuery.setResults(convertInlineResults(inlineQuery.getQuery()));
+        return answerInlineQuery;
+    }
+
+    private static List<InlineQueryResult> convertInlineResults(String query) {
+        List<InlineQueryResult> results = new ArrayList<>();
+
+        InputTextMessageContent messageContent = new InputTextMessageContent();
+        messageContent.disableWebPagePreview();
+        messageContent.enableMarkdown(true);
+        messageContent.setMessageText("inline query - " + query);
+        InlineQueryResultArticle article = new InlineQueryResultArticle();
+        article.setInputMessageContent(messageContent);
+        article.setId("test id");
+        article.setTitle("test title");
+        article.setDescription("test description");
+        article.setThumbUrl("test thumb url");
+        results.add(article);
+
+        return results;
     }
 
     private void handleMessage(Message message) throws Exception {
