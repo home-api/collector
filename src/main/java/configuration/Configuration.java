@@ -16,14 +16,17 @@ import util.Emoji;
 public class Configuration extends AbstractModule {
 
     private String token;
+    private Boolean doCleaning;
 
-    public Configuration(String token) {
+    public Configuration(String token, Boolean doCleaning) {
         this.token = token;
+        this.doCleaning = doCleaning;
     }
 
     @Override
     protected void configure() {
         bindConstant().annotatedWith(Names.named("token")).to(token);
+        bindConstant().annotatedWith(Names.named("doCleaning")).to(doCleaning);
 
         //dao
         bind(OrderDAO.class).to(FileOrderDAOImpl.class);

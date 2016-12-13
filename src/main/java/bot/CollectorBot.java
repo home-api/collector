@@ -32,6 +32,10 @@ public class CollectorBot extends TelegramLongPollingBot {
     private String token;
 
     @Inject
+    @Named("doCleaning")
+    private Boolean doCleaning;
+
+    @Inject
     private OrderDAO orderDAO;
 
     @Inject
@@ -57,7 +61,7 @@ public class CollectorBot extends TelegramLongPollingBot {
 
     private void cleanOutdatedOrders() {
         LocalDateTime currentDate = LocalDateTime.now();
-        if (currentDate.getDayOfYear() != date.getDayOfYear()) {
+        if (doCleaning && currentDate.getDayOfYear() != date.getDayOfYear()) {
             LOGGER.info("Removing all orders..");
             orderDAO.removeAllOrders();
             date = currentDate;

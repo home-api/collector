@@ -7,13 +7,16 @@ import org.telegram.telegrambots.TelegramBotsApi;
 
 public class Main {
 
+    private static final int ARGUMENTS_REQUIRED_COUNT = 2;
+
     public static void main(String[] args) throws Exception {
-        if (args.length < 1) {
+        if (args.length != ARGUMENTS_REQUIRED_COUNT) {
             throw new IllegalAccessException("You must pass token!");
         }
 
         String token = args[0];
-        Injector injector = Guice.createInjector(new Configuration(token));
+        Boolean doCleaning = Boolean.parseBoolean(args[1]);
+        Injector injector = Guice.createInjector(new Configuration(token, doCleaning));
 
         ApiContextInitializer.init();
         TelegramBotsApi api = new TelegramBotsApi();
