@@ -1,14 +1,18 @@
 package util;
 
 public enum Emoji {
-    TOILET('\uD83D', '\uDEBD'),
-    BACK_WITH_LEFTWARDS_ARROW_ABOVE('\uD83D', '\uDD19'),
-    FILE_FOLDER('\uD83D', '\uDCC1'),
-    SUSHI('\uD83C', '\uDF63'),
-    CASH('\uD83D', '\uDCB0');
+    SUBMENU_ITEM('\uD83D', '\uDCC1'),
+    MENU_BACK('\uD83D', '\uDD19'),
+    ORDER_POSITION('\u2714'),
+    ORDER_SUM('\uD83D', '\uDCB0'),
+    ORDER_RESET('\u267B');
 
     Character firstChar;
     Character secondChar;
+
+    Emoji(Character firstChar) {
+        this(firstChar, null);
+    }
 
     Emoji(Character firstChar, Character secondChar) {
         this.firstChar = firstChar;

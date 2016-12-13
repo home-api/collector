@@ -36,14 +36,14 @@ public class MenuCommand implements Command {
         for (Map.Entry<String, Map<String, BigDecimal>> group : allFood.entrySet()) {
             String menu = group.getKey();
             KeyboardRow row = new KeyboardRow();
-            row.add(Emoji.FILE_FOLDER + menu);
+            row.add(Emoji.SUBMENU_ITEM + menu);
             mainKeyboard.add(row);
             subMenus.put(menu, getKeyboard(group.getValue()));
         }
 
         KeyboardRow row = new KeyboardRow();
-        row.add(Emoji.CASH + Constants.SUM);
-        row.add(Emoji.TOILET + Constants.CLEAN);
+        row.add(Emoji.ORDER_SUM + Constants.SUM);
+        row.add(Emoji.ORDER_RESET + Constants.CLEAN);
         mainKeyboard.add(row);
 
         mainKeyboardMarkup = new ReplyKeyboardMarkup();
@@ -51,14 +51,14 @@ public class MenuCommand implements Command {
     }
 
     private static String getBackCommand() {
-        return Emoji.BACK_WITH_LEFTWARDS_ARROW_ABOVE + Constants.BACK;
+        return Emoji.MENU_BACK + Constants.BACK;
     }
 
     private ReplyKeyboardMarkup getKeyboard(Map<String, BigDecimal> food) {
         List<KeyboardRow> keyboard = new ArrayList<>();
         food.forEach((sushi, price) -> {
             KeyboardRow row = new KeyboardRow();
-            row.add(Emoji.SUSHI + sushi + " (" + price + ")");
+            row.add(Emoji.ORDER_POSITION + sushi + " (" + price + ")");
             keyboard.add(row);
         });
 

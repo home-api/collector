@@ -38,11 +38,11 @@ public class Configuration extends AbstractModule {
         bind(Command.class).annotatedWith(Names.named("menu")).to(MenuCommand.class);
 
         MapBinder<String, Command> commandsBinder = MapBinder.newMapBinder(binder(), String.class, Command.class);
-        commandsBinder.addBinding(Emoji.SUSHI.toString()).to(OrderCommand.class);
-        commandsBinder.addBinding(Emoji.CASH.toString()).to(SumCommand.class);
-        commandsBinder.addBinding(Emoji.TOILET.toString()).to(ClearCommand.class);
-        commandsBinder.addBinding(Emoji.FILE_FOLDER.toString()).to(MenuCommand.class);
-        commandsBinder.addBinding(Emoji.BACK_WITH_LEFTWARDS_ARROW_ABOVE.toString()).to(MenuCommand.class);
+        commandsBinder.addBinding(Emoji.ORDER_POSITION.toString()).to(OrderCommand.class);
+        commandsBinder.addBinding(Emoji.ORDER_SUM.toString()).to(SumCommand.class);
+        commandsBinder.addBinding(Emoji.ORDER_RESET.toString()).to(ClearCommand.class);
+        commandsBinder.addBinding(Emoji.SUBMENU_ITEM.toString()).to(MenuCommand.class);
+        commandsBinder.addBinding(Emoji.MENU_BACK.toString()).to(MenuCommand.class);
 
         //controllers
         bind(CollectorBot.class).annotatedWith(Names.named("bot")).to(CollectorBot.class);
