@@ -42,8 +42,9 @@ public class MenuCommand implements Command {
         }
 
         KeyboardRow row = new KeyboardRow();
-        row.add(Emoji.ORDER_SUM + Constants.SUM);
-        row.add(Emoji.ORDER_RESET + Constants.CLEAN);
+        row.add(Emoji.ORDER_SUM.toString());
+        row.add(Emoji.ORDER_RESET.toString());
+        row.add(Emoji.ORDER_EDIT.toString());
         mainKeyboard.add(row);
 
         mainKeyboardMarkup = new ReplyKeyboardMarkup();

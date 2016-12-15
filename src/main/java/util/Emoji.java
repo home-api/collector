@@ -5,13 +5,15 @@ public enum Emoji {
     MENU_BACK('\uD83D', '\uDD19'),
     ORDER_POSITION('\u2714'),
     ORDER_SUM('\uD83D', '\uDCB0'),
-    ORDER_RESET('\u267B');
+    ORDER_RESET('\u267B'),
+    ORDER_EDIT('\uD83D', '\uDCDD'),
+    ORDER_ITEM_REMOVE('\u274C');
 
     Character firstChar;
     Character secondChar;
 
     Emoji(Character firstChar) {
-        this(firstChar, null);
+        this(firstChar, ' ');
     }
 
     Emoji(Character firstChar, Character secondChar) {

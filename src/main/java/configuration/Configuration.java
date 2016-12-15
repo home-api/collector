@@ -8,6 +8,8 @@ import command.Command;
 import command.impl.ClearCommand;
 import command.impl.MenuCommand;
 import command.impl.OrderCommand;
+import command.impl.RemoveOrderItemCommand;
+import command.impl.RemoveOrderItemMenuCommand;
 import command.impl.SumCommand;
 import dao.OrderDAO;
 import dao.impl.FileOrderDAOImpl;
@@ -39,10 +41,12 @@ public class Configuration extends AbstractModule {
 
         MapBinder<String, Command> commandsBinder = MapBinder.newMapBinder(binder(), String.class, Command.class);
         commandsBinder.addBinding(Emoji.ORDER_POSITION.toString()).to(OrderCommand.class);
-        commandsBinder.addBinding(Emoji.ORDER_SUM.toString()).to(SumCommand.class);
-        commandsBinder.addBinding(Emoji.ORDER_RESET.toString()).to(ClearCommand.class);
         commandsBinder.addBinding(Emoji.SUBMENU_ITEM.toString()).to(MenuCommand.class);
         commandsBinder.addBinding(Emoji.MENU_BACK.toString()).to(MenuCommand.class);
+        commandsBinder.addBinding(Emoji.ORDER_SUM.toString()).to(SumCommand.class);
+        commandsBinder.addBinding(Emoji.ORDER_RESET.toString()).to(ClearCommand.class);
+        commandsBinder.addBinding(Emoji.ORDER_EDIT.toString()).to(RemoveOrderItemMenuCommand.class);
+        commandsBinder.addBinding(Emoji.ORDER_ITEM_REMOVE.toString()).to(RemoveOrderItemCommand.class);
 
         //controllers
         bind(CollectorBot.class).annotatedWith(Names.named("bot")).to(CollectorBot.class);

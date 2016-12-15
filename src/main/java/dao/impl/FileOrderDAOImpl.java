@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -168,6 +169,25 @@ public class FileOrderDAOImpl implements OrderDAO {
     @Override
     public Map<String, Map<String, BigDecimal>> getAllFood() {
         return food;
+    }
+
+    @Override
+    public List<Map<String, BigDecimal>> getCustomerOrders(String customer) {
+        return allOrders.get(customer);
+    }
+
+    @Override
+    public boolean removeOrderItem(String customer, String orderItem) {
+        List<Map<String, BigDecimal>> customerOrders = allOrders.get(customer);
+        Iterator<Map<String, BigDecimal>> iterator = customerOrders.iterator();
+        while (iterator.hasNext()) {
+            Map<String, BigDecimal> item = iterator.next();
+            if (item.keySet().contains(orderItem)) {
+                iterator.remove();
+                return true;
+            }
+        }
+        return false;
     }
 
 }

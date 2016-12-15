@@ -16,7 +16,6 @@ import org.telegram.telegrambots.api.objects.inlinequery.inputmessagecontent.Inp
 import org.telegram.telegrambots.api.objects.inlinequery.result.InlineQueryResult;
 import org.telegram.telegrambots.api.objects.inlinequery.result.InlineQueryResultArticle;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -54,22 +53,27 @@ public class CollectorBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         cleanOutdatedOrders();
 
-        if (update.hasInlineQuery()) {
-            handleInlineQuery(update.getInlineQuery());
-            return;
-        }
-
-        if (!update.hasMessage()) {
-            return;
-        }
-
-        Message message = update.getMessage();
-
         try {
+            if (update.hasInlineQuery()) {
+                handleInlineQuery(update.getInlineQuery());
+                return;
+            }
+
+            if (update.hasCallbackQuery()) {
+                handleCallbackQuery(update);
+                return;
+            }
+
+            if (!update.hasMessage()) {
+                return;
+            }
+
+            Message message = update.getMessage();
             handleMessage(message);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
+
     }
 
     private void cleanOutdatedOrders() {
@@ -81,14 +85,10 @@ public class CollectorBot extends TelegramLongPollingBot {
         }
     }
 
-    private void handleInlineQuery(InlineQuery inlineQuery) {
+    private void handleInlineQuery(InlineQuery inlineQuery) throws Exception {
         String query = inlineQuery.getQuery();
         if (!query.isEmpty()) {
-            try {
-                answerInlineQuery(convertResultsToResponse(inlineQuery));
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-            }
+            answerInlineQuery(convertResultsToResponse(inlineQuery));
         }
     }
 
@@ -117,6 +117,25 @@ public class CollectorBot extends TelegramLongPollingBot {
         return results;
     }
 
+    private boolean handleCallbackQuery(Update update) throws Exception {
+        String callbackData = update.getCallbackQuery().getData();
+        String commandPrefix = getCommandPrefix(callbackData);
+        String commandText = getCommandText(callbackData);
+
+        Command command = commands.get(commandPrefix);
+
+        Message message = update.getCallbackQuery().getMessage();
+        if (command == null) {
+            sendHelpMessage("Не понял, сэр", message);
+            LOGGER.info(message.getChat().getFirstName().trim() + " has sent incorrect command: " + commandPrefix);
+            return true;
+        }
+
+        SendMessage response = command.execute(commandText, message);
+        sendMessage(response);
+        return false;
+    }
+
     private void handleMessage(Message message) throws Exception {
         if (!message.hasText()) {
             sendHelpMessage("Что пожелаете, сэр?", message);
@@ -125,14 +144,8 @@ public class CollectorBot extends TelegramLongPollingBot {
         String messageText = message.getText();
         LOGGER.info(message.getFrom().getFirstName() + " has sent " + messageText);
 
-        if (messageText.length() < 4) {
-            sendHelpMessage("Не понял, сэр", message);
-            LOGGER.info(message.getFrom().getFirstName() + " has sent " + messageText);
-            return;
-        }
-
-        String commandPrefix = messageText.substring(0, 2);
-        String commandText = messageText.substring(2);
+        String commandPrefix = getCommandPrefix(messageText);
+        String commandText = getCommandText(messageText);
 
         Command command = commands.get(commandPrefix);
 
@@ -144,6 +157,14 @@ public class CollectorBot extends TelegramLongPollingBot {
 
         SendMessage response = command.execute(commandText, message);
         sendMessage(response);
+    }
+
+    private String getCommandText(String messageText) {
+        return messageText.length() > 3 ? messageText.substring(2) : null;
+    }
+
+    private String getCommandPrefix(String messageText) {
+        return messageText.length() >= 2 ? messageText.substring(0, 2) : messageText.substring(0, 1) + ' ';
     }
 
     private void sendHelpMessage(String greeting, Message message) throws Exception {
