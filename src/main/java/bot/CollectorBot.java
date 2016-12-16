@@ -19,6 +19,7 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -86,35 +87,27 @@ public class CollectorBot extends TelegramLongPollingBot {
     }
 
     private void handleInlineQuery(InlineQuery inlineQuery) throws Exception {
-        String query = inlineQuery.getQuery();
-        if (!query.isEmpty()) {
-            answerInlineQuery(convertResultsToResponse(inlineQuery));
-        }
-    }
-
-    private static AnswerInlineQuery convertResultsToResponse(InlineQuery inlineQuery) {
         AnswerInlineQuery answerInlineQuery = new AnswerInlineQuery();
         answerInlineQuery.setInlineQueryId(inlineQuery.getId());
-        answerInlineQuery.setResults(convertInlineResults(inlineQuery.getQuery()));
-        return answerInlineQuery;
+        answerInlineQuery.setResults(convertInlineResults());
+        answerInlineQuery(answerInlineQuery);
     }
 
-    private static List<InlineQueryResult> convertInlineResults(String query) {
-        List<InlineQueryResult> results = new ArrayList<>();
-
+    private List<InlineQueryResult> convertInlineResults() {
+        // only one supported result - order sum
         InputTextMessageContent messageContent = new InputTextMessageContent();
         messageContent.disableWebPagePreview();
         messageContent.enableMarkdown(true);
-        messageContent.setMessageText("inline query - " + query);
+        messageContent.setMessageText(orderDAO.getOrder());
+
         InlineQueryResultArticle article = new InlineQueryResultArticle();
         article.setInputMessageContent(messageContent);
-        article.setId("test id");
-        article.setTitle("test title");
-        article.setDescription("test description");
-        article.setThumbUrl("test thumb url");
-        results.add(article);
+        article.setId("1");
+        article.setTitle("Заказ");
+        article.setDescription("Получить весь заказ");
+        article.setThumbUrl("http://pngimg.com/upload/money_PNG3545.png");
 
-        return results;
+        return Collections.singletonList(article);
     }
 
     private boolean handleCallbackQuery(Update update) throws Exception {
