@@ -3,11 +3,11 @@ package command.impl;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import command.Command;
-import dao.OrderDAO;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.api.objects.replykeyboard.buttons.KeyboardRow;
+import repository.MenuRepository;
 import util.Constants;
 import util.Emoji;
 
@@ -20,19 +20,23 @@ import java.util.Map;
 @Singleton
 public class MenuCommand implements Command {
 
-    private OrderDAO orderDAO;
+    private MenuRepository menuRepository;
 
     private Map<String, ReplyKeyboardMarkup> subMenus;
 
     private ReplyKeyboardMarkup mainKeyboardMarkup;
 
     @Inject
-    public MenuCommand(OrderDAO orderDAO) {
-        this.orderDAO = orderDAO;
+    public MenuCommand(MenuRepository menuRepository) {
+        this.menuRepository = menuRepository;
 
+        initializeMenu();
+    }
+
+    private void initializeMenu() {
         ArrayList<KeyboardRow> mainKeyboard = new ArrayList<>();
         subMenus = new HashMap<>();
-        Map<String, Map<String, BigDecimal>> allFood = orderDAO.getAllFood();
+        Map<String, Map<String, BigDecimal>> allFood = menuRepository.getAllMenu();
         for (Map.Entry<String, Map<String, BigDecimal>> group : allFood.entrySet()) {
             String menu = group.getKey();
             KeyboardRow row = new KeyboardRow();

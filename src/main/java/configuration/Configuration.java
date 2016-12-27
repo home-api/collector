@@ -11,8 +11,10 @@ import command.impl.OrderCommand;
 import command.impl.RemoveOrderItemCommand;
 import command.impl.RemoveOrderItemMenuCommand;
 import command.impl.SumCommand;
-import dao.OrderDAO;
-import dao.impl.FileOrderDAOImpl;
+import repository.MenuRepository;
+import repository.OrderRepository;
+import repository.impl.InMemoryOrderRepository;
+import repository.impl.PropertiesMenuRepository;
 import util.Emoji;
 
 public class Configuration extends AbstractModule {
@@ -30,8 +32,9 @@ public class Configuration extends AbstractModule {
         bindConstant().annotatedWith(Names.named("token")).to(token);
         bindConstant().annotatedWith(Names.named("doCleaning")).to(doCleaning);
 
-        //dao
-        bind(OrderDAO.class).to(FileOrderDAOImpl.class);
+        //repositories
+        bind(OrderRepository.class).to(InMemoryOrderRepository.class);
+        bind(MenuRepository.class).to(PropertiesMenuRepository.class);
 
         //commands
         bind(Command.class).annotatedWith(Names.named("clear")).to(ClearCommand.class);

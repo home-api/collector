@@ -2,7 +2,7 @@ package command.impl;
 
 import com.google.inject.Inject;
 import command.Command;
-import dao.OrderDAO;
+import repository.OrderRepository;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -17,11 +17,11 @@ import java.util.Map;
 
 public class RemoveOrderItemMenuCommand implements Command {
 
-    private OrderDAO orderDAO;
+    private OrderRepository orderRepository;
 
     @Inject
-    public RemoveOrderItemMenuCommand(OrderDAO orderDAO) {
-        this.orderDAO = orderDAO;
+    public RemoveOrderItemMenuCommand(OrderRepository orderRepository) {
+        this.orderRepository = orderRepository;
     }
 
     @Override
@@ -35,7 +35,7 @@ public class RemoveOrderItemMenuCommand implements Command {
         response.setReplyMarkup(replyMarkup);
 
         String userName = message.getChat().getFirstName().trim();
-        List<Map<String, BigDecimal>> userOrders = orderDAO.getCustomerOrders(userName);
+        List<Map<String, BigDecimal>> userOrders = orderRepository.getCustomerOrders(userName);
 
         for (Map<String, BigDecimal> customerOrder : userOrders) {
             InlineKeyboardButton button = new InlineKeyboardButton();
