@@ -74,6 +74,6 @@ public class PropertiesMenuRepository implements MenuRepository {
 
     @Override
     public Map<String, Map<String, BigDecimal>> getAllMenu() {
-        return null;
+        return menu;
     }
 }
