@@ -28,7 +28,7 @@ public class OrderCommand implements Command {
         String customer = message.getFrom().getFirstName().trim();
         String order = commandText.split("\\(")[0].trim();
         boolean isOrderAdded = orderRepository.addOrder(customer, order);
-        String responseText = isOrderAdded ? "Порция " + order + " была добавлена" : Property.get(ERROR_MESSAGE_PROPERTY_KEY);
+        String responseText = isOrderAdded ? "Порция " + order + " была добавлена" : "Не понял, сэр";
         return getSendMessage(responseText, message);
     }
 }
