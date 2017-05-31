@@ -3,9 +3,7 @@ package bot;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 import command.Command;
-import util.SumFormatter;
 import command.impl.MenuCommand;
-import repository.OrderRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.api.methods.AnswerInlineQuery;
@@ -17,6 +15,8 @@ import org.telegram.telegrambots.api.objects.inlinequery.inputmessagecontent.Inp
 import org.telegram.telegrambots.api.objects.inlinequery.result.InlineQueryResult;
 import org.telegram.telegrambots.api.objects.inlinequery.result.InlineQueryResultArticle;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import service.OrderService;
+import util.SumFormatter;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -44,7 +44,7 @@ public class CollectorBot extends TelegramLongPollingBot {
     private Boolean doCleaning;
 
     @Inject
-    private OrderRepository orderRepository;
+    private OrderService orderService;
 
     @Inject
     @Named("menu")
@@ -81,7 +81,7 @@ public class CollectorBot extends TelegramLongPollingBot {
         LocalDateTime currentDate = LocalDateTime.now();
         if (doCleaning && currentDate.getDayOfYear() != date.getDayOfYear()) {
             LOGGER.info("Removing all orders..");
-            orderRepository.removeAllOrders();
+            orderService.deleteAllOrders();
             date = currentDate;
         }
     }
@@ -98,7 +98,7 @@ public class CollectorBot extends TelegramLongPollingBot {
         InputTextMessageContent messageContent = new InputTextMessageContent();
         messageContent.disableWebPagePreview();
         messageContent.enableMarkdown(true);
-        messageContent.setMessageText(SumFormatter.format(orderRepository.getAllOrders()));
+        messageContent.setMessageText(SumFormatter.format(orderService.getAllOrders()));
 
         InlineQueryResultArticle article = new InlineQueryResultArticle();
         article.setInputMessageContent(messageContent);

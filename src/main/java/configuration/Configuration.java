@@ -4,17 +4,22 @@ import bot.CollectorBot;
 import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.MapBinder;
 import com.google.inject.name.Names;
+import com.mongodb.MongoClient;
 import command.Command;
 import command.impl.ClearCommand;
+import command.impl.DeleteOrderItemCommand;
 import command.impl.MenuCommand;
 import command.impl.OrderCommand;
-import command.impl.RemoveOrderItemCommand;
 import command.impl.RemoveOrderItemMenuCommand;
 import command.impl.SumCommand;
-import repository.MenuRepository;
-import repository.OrderRepository;
-import repository.impl.InMemoryOrderRepository;
-import repository.impl.PropertiesMenuRepository;
+import org.mongodb.morphia.Datastore;
+import org.mongodb.morphia.Morphia;
+import repository.MenuDAO;
+import repository.OrderDAO;
+import repository.impl.OrderDAOImpl;
+import repository.impl.PropertiesMenuDAO;
+import service.OrderService;
+import service.impl.OrderServiceImpl;
 import util.Emoji;
 
 public class Configuration extends AbstractModule {
@@ -32,9 +37,18 @@ public class Configuration extends AbstractModule {
         bindConstant().annotatedWith(Names.named("token")).to(token);
         bindConstant().annotatedWith(Names.named("doCleaning")).to(doCleaning);
 
+        MongoClient mongoClient = new MongoClient("localhost", 27017);
+
+        Morphia morphia = new Morphia();
+        morphia.mapPackage("model");
+        Datastore datastore = morphia.createDatastore(mongoClient, "orders");
+
         //repositories
-        bind(OrderRepository.class).to(InMemoryOrderRepository.class);
-        bind(MenuRepository.class).to(PropertiesMenuRepository.class);
+        bind(MenuDAO.class).to(PropertiesMenuDAO.class);
+        bind(OrderDAO.class).toInstance(new OrderDAOImpl(datastore));
+
+        //services
+        bind(OrderService.class).toInstance(new OrderServiceImpl());
 
         //commands
         bind(Command.class).annotatedWith(Names.named("clear")).to(ClearCommand.class);
@@ -49,7 +63,7 @@ public class Configuration extends AbstractModule {
         commandsBinder.addBinding(Emoji.ORDER_SUM.toString()).to(SumCommand.class);
         commandsBinder.addBinding(Emoji.ORDER_RESET.toString()).to(ClearCommand.class);
         commandsBinder.addBinding(Emoji.ORDER_EDIT.toString()).to(RemoveOrderItemMenuCommand.class);
-        commandsBinder.addBinding(Emoji.ORDER_ITEM_REMOVE.toString()).to(RemoveOrderItemCommand.class);
+        commandsBinder.addBinding(Emoji.ORDER_ITEM_REMOVE.toString()).to(DeleteOrderItemCommand.class);
 
         //controllers
         bind(CollectorBot.class).annotatedWith(Names.named("bot")).to(CollectorBot.class);

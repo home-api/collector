@@ -1,6 +1,6 @@
+import bot.CollectorBot;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import bot.CollectorBot;
 import configuration.Configuration;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;

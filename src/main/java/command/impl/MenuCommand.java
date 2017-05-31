@@ -7,7 +7,7 @@ import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.api.objects.replykeyboard.buttons.KeyboardRow;
-import repository.MenuRepository;
+import repository.MenuDAO;
 import util.Constants;
 import util.Emoji;
 
@@ -20,15 +20,15 @@ import java.util.Map;
 @Singleton
 public class MenuCommand implements Command {
 
-    private MenuRepository menuRepository;
+    private MenuDAO menuDAO;
 
     private Map<String, ReplyKeyboardMarkup> subMenus;
 
     private ReplyKeyboardMarkup mainKeyboardMarkup;
 
     @Inject
-    public MenuCommand(MenuRepository menuRepository) {
-        this.menuRepository = menuRepository;
+    public MenuCommand(MenuDAO menuDAO) {
+        this.menuDAO = menuDAO;
 
         initializeMenu();
     }
@@ -36,7 +36,7 @@ public class MenuCommand implements Command {
     private void initializeMenu() {
         ArrayList<KeyboardRow> mainKeyboard = new ArrayList<>();
         subMenus = new HashMap<>();
-        Map<String, Map<String, BigDecimal>> allFood = menuRepository.getAllMenu();
+        Map<String, Map<String, BigDecimal>> allFood = menuDAO.getAllMenu();
         for (Map.Entry<String, Map<String, BigDecimal>> group : allFood.entrySet()) {
             String menu = group.getKey();
             KeyboardRow row = new KeyboardRow();
@@ -74,7 +74,7 @@ public class MenuCommand implements Command {
         ReplyKeyboardMarkup replyKeyboardMarkup = new ReplyKeyboardMarkup();
         replyKeyboardMarkup.setSelective(true);
         replyKeyboardMarkup.setResizeKeyboard(true);
-        replyKeyboardMarkup.setOneTimeKeyboad(false);
+        replyKeyboardMarkup.setOneTimeKeyboard(false);
         replyKeyboardMarkup.setKeyboard(keyboard);
 
         return replyKeyboardMarkup;

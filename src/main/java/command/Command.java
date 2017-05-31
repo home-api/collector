@@ -7,7 +7,7 @@ public interface Command {
 
     SendMessage execute(String commandText, Message message) throws Exception;
 
-    default SendMessage getSendMessage(String text, Message message) throws Exception {
+    default SendMessage createSendMessage(String text, Message message) throws Exception {
         SendMessage response = new SendMessage();
         response.setText(text);
         response.setChatId(message.getChatId());

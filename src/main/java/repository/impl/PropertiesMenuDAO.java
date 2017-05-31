@@ -4,7 +4,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import repository.MenuRepository;
+import repository.MenuDAO;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,9 +16,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-public class PropertiesMenuRepository implements MenuRepository {
+public class PropertiesMenuDAO implements MenuDAO {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesMenuRepository.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesMenuDAO.class);
 
     private static final String MENU_FILE_NAME = "menu";
     private static final String MENU_FILE_EXTENSION = "properties";
@@ -26,7 +26,7 @@ public class PropertiesMenuRepository implements MenuRepository {
 
     private Map<String, Map<String, BigDecimal>> menu;
 
-    public PropertiesMenuRepository() throws Exception {
+    public PropertiesMenuDAO() throws Exception {
         initializeMenu();
     }
 
@@ -35,8 +35,8 @@ public class PropertiesMenuRepository implements MenuRepository {
 
         File menuFolder = new File(MENU_FILE_NAME);
         if (!menuFolder.exists()) {
-            LOGGER.error("Menu folder does not exist");
-            throw new IllegalStateException("Menu folder does not exist");
+            LOGGER.error("Menu folder does not exist: " + menuFolder.getAbsolutePath());
+            throw new IllegalStateException("Menu folder does not exist" + menuFolder.getAbsolutePath());
         }
 
         Collection<File> menuFiles = FileUtils.listFiles(

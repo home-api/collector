@@ -2,11 +2,11 @@ package command.impl;
 
 import com.google.inject.Inject;
 import command.Command;
-import repository.OrderRepository;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import service.OrderService;
 import util.Emoji;
 
 import java.math.BigDecimal;
@@ -17,12 +17,8 @@ import java.util.Map;
 
 public class RemoveOrderItemMenuCommand implements Command {
 
-    private OrderRepository orderRepository;
-
     @Inject
-    public RemoveOrderItemMenuCommand(OrderRepository orderRepository) {
-        this.orderRepository = orderRepository;
-    }
+    private OrderService orderService;
 
     @Override
     public SendMessage execute(String commandText, Message message) throws Exception {
@@ -35,9 +31,9 @@ public class RemoveOrderItemMenuCommand implements Command {
         response.setReplyMarkup(replyMarkup);
 
         String userName = message.getChat().getFirstName().trim();
-        List<Map<String, BigDecimal>> userOrders = orderRepository.getCustomerOrders(userName);
+        List<Map<String, Double>> userOrders = orderService.getCustomerOrders(userName);
 
-        for (Map<String, BigDecimal> customerOrder : userOrders) {
+        for (Map<String, Double> customerOrder : userOrders) {
             InlineKeyboardButton button = new InlineKeyboardButton();
             String text = Emoji.ORDER_ITEM_REMOVE + customerOrder.keySet().stream().findFirst().get();
             button.setText(text);
