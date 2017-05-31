@@ -7,9 +7,9 @@ import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.api.objects.replykeyboard.buttons.KeyboardRow;
-import repository.MenuDAO;
 import util.Constants;
 import util.Emoji;
+import util.Menu;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -20,15 +20,15 @@ import java.util.Map;
 @Singleton
 public class MenuCommand implements Command {
 
-    private MenuDAO menuDAO;
+    private Menu Menu;
 
     private Map<String, ReplyKeyboardMarkup> subMenus;
 
     private ReplyKeyboardMarkup mainKeyboardMarkup;
 
     @Inject
-    public MenuCommand(MenuDAO menuDAO) {
-        this.menuDAO = menuDAO;
+    public MenuCommand(Menu Menu) {
+        this.Menu = Menu;
 
         initializeMenu();
     }
@@ -36,7 +36,7 @@ public class MenuCommand implements Command {
     private void initializeMenu() {
         ArrayList<KeyboardRow> mainKeyboard = new ArrayList<>();
         subMenus = new HashMap<>();
-        Map<String, Map<String, BigDecimal>> allFood = menuDAO.getAllMenu();
+        Map<String, Map<String, BigDecimal>> allFood = Menu.getAllMenu();
         for (Map.Entry<String, Map<String, BigDecimal>> group : allFood.entrySet()) {
             String menu = group.getKey();
             KeyboardRow row = new KeyboardRow();

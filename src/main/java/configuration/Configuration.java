@@ -14,13 +14,12 @@ import command.impl.RemoveOrderItemMenuCommand;
 import command.impl.SumCommand;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
-import repository.MenuDAO;
 import repository.OrderDAO;
 import repository.impl.OrderDAOImpl;
-import repository.impl.PropertiesMenuDAO;
 import service.OrderService;
 import service.impl.OrderServiceImpl;
 import util.Emoji;
+import util.Menu;
 
 public class Configuration extends AbstractModule {
 
@@ -44,7 +43,6 @@ public class Configuration extends AbstractModule {
         Datastore datastore = morphia.createDatastore(mongoClient, "orders");
 
         //repositories
-        bind(MenuDAO.class).to(PropertiesMenuDAO.class);
         bind(OrderDAO.class).toInstance(new OrderDAOImpl(datastore));
 
         //services
@@ -67,5 +65,8 @@ public class Configuration extends AbstractModule {
 
         //controllers
         bind(CollectorBot.class).annotatedWith(Names.named("bot")).to(CollectorBot.class);
+
+        //others
+        bind(Menu.class).to(Menu.class);
     }
 }

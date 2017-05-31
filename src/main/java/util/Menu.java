@@ -1,10 +1,9 @@
-package repository.impl;
+package util;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import repository.MenuDAO;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,9 +15,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-public class PropertiesMenuDAO implements MenuDAO {
+public class Menu {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PropertiesMenuDAO.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Menu.class);
 
     private static final String MENU_FILE_NAME = "menu";
     private static final String MENU_FILE_EXTENSION = "properties";
@@ -26,7 +25,7 @@ public class PropertiesMenuDAO implements MenuDAO {
 
     private Map<String, Map<String, BigDecimal>> menu;
 
-    public PropertiesMenuDAO() throws Exception {
+    public Menu() throws Exception {
         initializeMenu();
     }
 
@@ -60,7 +59,6 @@ public class PropertiesMenuDAO implements MenuDAO {
         }
     }
 
-    @Override
     public BigDecimal getPrice(String order) {
         for (Map.Entry<String, Map<String, BigDecimal>> group : menu.entrySet()) {
             for (Map.Entry<String, BigDecimal> food : group.getValue().entrySet()) {
@@ -72,7 +70,6 @@ public class PropertiesMenuDAO implements MenuDAO {
         return null;
     }
 
-    @Override
     public Map<String, Map<String, BigDecimal>> getAllMenu() {
         return menu;
     }

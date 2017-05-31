@@ -6,9 +6,9 @@ import model.Order;
 import model.OrderItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import repository.MenuDAO;
 import repository.OrderDAO;
 import service.OrderService;
+import util.Menu;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -22,7 +22,7 @@ public class OrderServiceImpl implements OrderService {
     private static final Logger LOGGER = LoggerFactory.getLogger(OrderServiceImpl.class);
 
     @Inject
-    private MenuDAO menuDAO;
+    private Menu Menu;
 
     @Inject
     private OrderDAO orderDAO;
@@ -52,7 +52,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private OrderItem createCustomerOrderItem(String orderItem) {
-        BigDecimal price = menuDAO.getPrice(orderItem);
+        BigDecimal price = Menu.getPrice(orderItem);
 
         if (price == null) {
             LOGGER.info("Price for order " + orderItem + " has not been found");
