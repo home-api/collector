@@ -44,6 +44,10 @@ public class Order extends BaseEntity {
         return false;
     }
 
+    public void addCustomerOrder(CustomerOrder customerOrder) {
+        customersOrders.add(customerOrder);
+    }
+
     public LocalDate getDate() {
         return date;
     }
@@ -53,14 +57,42 @@ public class Order extends BaseEntity {
     }
 
     public Set<CustomerOrder> getCustomersOrders() {
-        // TODO: e.k. check why this field is not initialized by default
-        if (customersOrders == null) {
-            customersOrders = new TreeSet<>();
-        }
         return customersOrders;
     }
 
     public void setCustomersOrders(Set<CustomerOrder> customersOrders) {
         this.customersOrders = customersOrders;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof Order)) {
+            return false;
+        }
+
+        Order that = (Order) o;
+
+        if (date != null ? !date.equals(that.date) : that.date != null) {
+            return false;
+        }
+
+        //noinspection RedundantIfStatement
+        if (customersOrders != null ? !customersOrders.equals(that.customersOrders) : that.customersOrders != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = 0;
+        result = result * 31 + (date != null ? date.hashCode() : 0);
+        result = result * 31 + (customersOrders != null ? customersOrders.hashCode() : 0);
+        return result;
     }
 }

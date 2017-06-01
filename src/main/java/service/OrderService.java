@@ -55,4 +55,11 @@ public interface OrderService {
      */
     boolean deleteAllOrders();
 
+    /**
+     * Repeats the most recent customer order. If customer does not have any previous orders returns false.
+     *
+     * @param customer customer
+     * @return whether an order has been repeated
+     */
+    boolean repeatOrder(String customer);
 }

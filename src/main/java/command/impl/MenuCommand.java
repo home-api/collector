@@ -11,7 +11,6 @@ import util.Constants;
 import util.Emoji;
 import util.Menu;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,8 +35,8 @@ public class MenuCommand implements Command {
     private void initializeMenu() {
         ArrayList<KeyboardRow> mainKeyboard = new ArrayList<>();
         subMenus = new HashMap<>();
-        Map<String, Map<String, BigDecimal>> allFood = Menu.getAllMenu();
-        for (Map.Entry<String, Map<String, BigDecimal>> group : allFood.entrySet()) {
+        Map<String, Map<String, Double>> allFood = Menu.getAllMenu();
+        for (Map.Entry<String, Map<String, Double>> group : allFood.entrySet()) {
             String menu = group.getKey();
             KeyboardRow row = new KeyboardRow();
             row.add(Emoji.SUBMENU_ITEM + menu);
@@ -51,6 +50,11 @@ public class MenuCommand implements Command {
         row.add(Emoji.ORDER_EDIT.toString());
         mainKeyboard.add(row);
 
+        // This is a row for new items with description that have to be converted to single-emoji menus later.
+        KeyboardRow newTemporaryRow = new KeyboardRow();
+        newTemporaryRow.add(Emoji.REPEAT_ORDER.toString() + " повторить");
+        mainKeyboard.add(newTemporaryRow);
+
         mainKeyboardMarkup = new ReplyKeyboardMarkup();
         mainKeyboardMarkup.setKeyboard(mainKeyboard);
     }
@@ -59,7 +63,7 @@ public class MenuCommand implements Command {
         return Emoji.MENU_BACK + Constants.BACK;
     }
 
-    private ReplyKeyboardMarkup getKeyboard(Map<String, BigDecimal> food) {
+    private ReplyKeyboardMarkup getKeyboard(Map<String, Double> food) {
         List<KeyboardRow> keyboard = new ArrayList<>();
         food.forEach((sushi, price) -> {
             KeyboardRow row = new KeyboardRow();

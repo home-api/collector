@@ -11,6 +11,7 @@ import command.impl.DeleteOrderItemCommand;
 import command.impl.MenuCommand;
 import command.impl.OrderCommand;
 import command.impl.RemoveOrderItemMenuCommand;
+import command.impl.RepeatOrderCommand;
 import command.impl.SumCommand;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
@@ -62,11 +63,12 @@ public class Configuration extends AbstractModule {
         commandsBinder.addBinding(Emoji.ORDER_RESET.toString()).to(ClearCommand.class);
         commandsBinder.addBinding(Emoji.ORDER_EDIT.toString()).to(RemoveOrderItemMenuCommand.class);
         commandsBinder.addBinding(Emoji.ORDER_ITEM_REMOVE.toString()).to(DeleteOrderItemCommand.class);
+        commandsBinder.addBinding(Emoji.REPEAT_ORDER.toString()).to(RepeatOrderCommand.class);
 
         //controllers
         bind(CollectorBot.class).annotatedWith(Names.named("bot")).to(CollectorBot.class);
 
         //others
-        bind(Menu.class).to(Menu.class);
+        bind(Menu.class).asEagerSingleton();
     }
 }

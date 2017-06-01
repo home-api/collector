@@ -12,6 +12,14 @@ public interface OrderDAO {
     Order getCurrentOrder();
 
     /**
+     * Returns the most recent order that contains a customer order with the given customer.
+     *
+     * @param customer customer name
+     * @return the most recent order
+     */
+    Order getRecentOrder(String customer);
+
+    /**
      * Updates order for the specified customer. Order price should be determined inside an implementation.
      *
      * @param order order

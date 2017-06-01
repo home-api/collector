@@ -7,7 +7,8 @@ public enum Emoji {
     ORDER_SUM('\uD83D', '\uDCB0'),
     ORDER_RESET('\u267B'),
     ORDER_EDIT('\uD83D', '\uDCDD'),
-    ORDER_ITEM_REMOVE('\u274C');
+    ORDER_ITEM_REMOVE('\u274C'),
+    REPEAT_ORDER('\uD83D', '\uDD02');
 
     Character firstChar;
     Character secondChar;

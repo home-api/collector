@@ -22,7 +22,7 @@ public class OrderServiceImpl implements OrderService {
     private static final Logger LOGGER = LoggerFactory.getLogger(OrderServiceImpl.class);
 
     @Inject
-    private Menu Menu;
+    private Menu menu;
 
     @Inject
     private OrderDAO orderDAO;
@@ -52,22 +52,24 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private OrderItem createCustomerOrderItem(String orderItem) {
-        BigDecimal price = Menu.getPrice(orderItem);
+        Double price = menu.getPrice(orderItem);
 
         if (price == null) {
             LOGGER.info("Price for order " + orderItem + " has not been found");
             throw new IllegalArgumentException("Price for order " + orderItem + " has not been found");
         }
 
-        OrderItem customerOrderItem = new OrderItem();
-        customerOrderItem.setItem(orderItem);
-        customerOrderItem.setPrice(price.doubleValue());
-        return customerOrderItem;
+        return new OrderItem(orderItem, price);
     }
 
     @Override
     public Map<String, List<Map<String, BigDecimal>>> getAllOrders() {
         Order currentOrder = orderDAO.getCurrentOrder();
+
+        if (currentOrder == null) {
+            return new HashMap<>();
+        }
+
         Map<String, List<Map<String, BigDecimal>>> allOrder = new HashMap<>();
         for (CustomerOrder customerOrder : currentOrder.getCustomersOrders()) {
             List<Map<String, BigDecimal>> allOrders = new ArrayList<>();
@@ -109,6 +111,21 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public boolean deleteAllOrders() {
         return orderDAO.deleteAllOrders();
+    }
+
+    @Override
+    public boolean repeatOrder(String customer) {
+        Order customerOrder = orderDAO.getRecentOrder(customer);
+
+        if (customerOrder == null) {
+            return false;
+        }
+
+        Order currentOrder = orderDAO.getCurrentOrder();
+        currentOrder.addCustomerOrder(customerOrder.getCustomerOrder(customer));
+        orderDAO.saveOrder(currentOrder);
+
+        return true;
     }
 
 

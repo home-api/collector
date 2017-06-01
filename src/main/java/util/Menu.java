@@ -8,13 +8,15 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
+/**
+ * This is a singleton-util class that composes and provides menu.
+ */
 public class Menu {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Menu.class);
@@ -23,7 +25,7 @@ public class Menu {
     private static final String MENU_FILE_EXTENSION = "properties";
     private static final String MENU_FILE_ENCODING = "UTF-8";
 
-    private Map<String, Map<String, BigDecimal>> menu;
+    private Map<String, Map<String, Double>> menu;
 
     public Menu() throws Exception {
         initializeMenu();
@@ -53,15 +55,15 @@ public class Menu {
             String menuName = FilenameUtils.getBaseName(menuFile.getAbsolutePath());
             Properties menu = new Properties();
             menu.load(new InputStreamReader(new FileInputStream(menuFile), MENU_FILE_ENCODING));
-            Map<String, BigDecimal> options = menu.entrySet().stream().collect(
-                    Collectors.toMap(e -> (String) e.getKey(), e -> new BigDecimal((String) e.getValue())));
+            Map<String, Double> options = menu.entrySet().stream().collect(
+                    Collectors.toMap(e -> (String) e.getKey(), e -> Double.valueOf((String) e.getValue())));
             this.menu.put(menuName, options);
         }
     }
 
-    public BigDecimal getPrice(String order) {
-        for (Map.Entry<String, Map<String, BigDecimal>> group : menu.entrySet()) {
-            for (Map.Entry<String, BigDecimal> food : group.getValue().entrySet()) {
+    public Double getPrice(String order) {
+        for (Map.Entry<String, Map<String, Double>> group : menu.entrySet()) {
+            for (Map.Entry<String, Double> food : group.getValue().entrySet()) {
                 if (food.getKey().equals(order)) {
                     return food.getValue();
                 }
@@ -70,7 +72,7 @@ public class Menu {
         return null;
     }
 
-    public Map<String, Map<String, BigDecimal>> getAllMenu() {
+    public Map<String, Map<String, Double>> getAllMenu() {
         return menu;
     }
 }
