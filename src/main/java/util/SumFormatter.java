@@ -4,8 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,7 +22,10 @@ public final class SumFormatter {
 
     public static String format(Map<String, List<Map<String, BigDecimal>>> allOrders) {
         LOGGER.info("getting sum of all allOrders...");
-        StringBuilder response = new StringBuilder("Заказ\n\n");
+        StringBuilder response = new StringBuilder(
+                "Заказ на "
+                        + DateTimeFormatter.ofPattern("d MMMM yyyy", new Locale("ru")).format(LocalDate.now())
+                        + "\n\n");
         Set<Map.Entry<String, List<Map<String, BigDecimal>>>> userOrders = allOrders.entrySet();
         BigDecimal sum = new BigDecimal(0.0);
         Map<String, Integer> groupedSushi = new HashMap<>();
