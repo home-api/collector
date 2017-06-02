@@ -10,7 +10,6 @@ import repository.OrderDAO;
 import service.OrderService;
 import util.Menu;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -63,19 +62,19 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Map<String, List<Map<String, BigDecimal>>> getAllOrders() {
+    public Map<String, List<Map<String, Double>>> getAllOrders() {
         Order currentOrder = orderDAO.getCurrentOrder();
 
         if (currentOrder == null) {
             return new HashMap<>();
         }
 
-        Map<String, List<Map<String, BigDecimal>>> allOrder = new HashMap<>();
+        Map<String, List<Map<String, Double>>> allOrder = new HashMap<>();
         for (CustomerOrder customerOrder : currentOrder.getCustomersOrders()) {
-            List<Map<String, BigDecimal>> allOrders = new ArrayList<>();
+            List<Map<String, Double>> allOrders = new ArrayList<>();
             for (OrderItem orderItem : customerOrder.getOrders()) {
-                HashMap<String, BigDecimal> orderPrices = new HashMap<>();
-                orderPrices.put(orderItem.getItem(), BigDecimal.valueOf(orderItem.getPrice()));
+                HashMap<String, Double> orderPrices = new HashMap<>();
+                orderPrices.put(orderItem.getItem(), orderItem.getPrice());
                 allOrders.add(orderPrices);
             }
             allOrder.put(customerOrder.getName(), allOrders);

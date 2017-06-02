@@ -8,7 +8,6 @@ import org.telegram.telegrambots.api.objects.Message;
 import service.OrderService;
 import util.SumFormatter;
 
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +19,7 @@ public class SumCommand implements Command {
 
     @Override
     public SendMessage execute(String commandText, Message message) throws Exception {
-        Map<String, List<Map<String, BigDecimal>>> orders = orderService.getAllOrders();
+        Map<String, List<Map<String, Double>>> orders = orderService.getAllOrders();
         return createSendMessage(SumFormatter.format(orders), message);
     }
 }

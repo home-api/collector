@@ -1,7 +1,5 @@
 package service;
 
-import java.math.BigDecimal;
-import java.util.DoubleSummaryStatistics;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +19,7 @@ public interface OrderService {
      *
      * @return orders
      */
-    Map<String, List<Map<String, BigDecimal>>> getAllOrders();
+    Map<String, List<Map<String, Double>>> getAllOrders();
 
     /**
      * Returns all customer order;

@@ -17,31 +17,35 @@ public final class SumFormatter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SumFormatter.class);
 
+    private static final Double DELIVERY_PRICE = 2.5;
+
     private SumFormatter() {
     }
 
-    public static String format(Map<String, List<Map<String, BigDecimal>>> allOrders) {
+    public static String format(Map<String, List<Map<String, Double>>> allOrders) {
         LOGGER.info("getting sum of all allOrders...");
         StringBuilder response = new StringBuilder(
                 "Заказ на "
                         + DateTimeFormatter.ofPattern("d MMMM yyyy", new Locale("ru")).format(LocalDate.now())
                         + "\n\n");
-        Set<Map.Entry<String, List<Map<String, BigDecimal>>>> userOrders = allOrders.entrySet();
-        BigDecimal sum = new BigDecimal(0.0);
+        Set<Map.Entry<String, List<Map<String, Double>>>> userOrders = allOrders.entrySet();
+        BigDecimal deliveryPerUser =
+                new BigDecimal(DELIVERY_PRICE / userOrders.size()).setScale(2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal sum = new BigDecimal(0.0).setScale(2, BigDecimal.ROUND_HALF_UP);
         Map<String, Integer> groupedSushi = new HashMap<>();
-        for (Map.Entry<String, List<Map<String, BigDecimal>>> userOrder : userOrders) {
+        for (Map.Entry<String, List<Map<String, Double>>> userOrder : userOrders) {
             response.append(userOrder.getKey());
             response.append(": ");
-            List<Map<String, BigDecimal>> orders = userOrder.getValue();
+            List<Map<String, Double>> orders = userOrder.getValue();
             StringBuilder customerOrderString = new StringBuilder();
-            BigDecimal customerSum = new BigDecimal(0.0);
-            for (Map<String, BigDecimal> customerOrder : orders) {
-                Set<Map.Entry<String, BigDecimal>> sushies = customerOrder.entrySet();
-                for (Map.Entry<String, BigDecimal> sushi : sushies) {
+            BigDecimal customerSum = new BigDecimal(0.0).setScale(2, BigDecimal.ROUND_HALF_UP);
+            for (Map<String, Double> customerOrder : orders) {
+                Set<Map.Entry<String, Double>> sushies = customerOrder.entrySet();
+                for (Map.Entry<String, Double> sushi : sushies) {
                     String sushiName = sushi.getKey();
                     String value = sushiName + "(" + sushi.getValue() + ")";
                     customerOrderString.append(customerOrderString.length() > 0 ? ", " + value : value);
-                    customerSum = customerSum.add(sushi.getValue());
+                    customerSum = customerSum.add(BigDecimal.valueOf(sushi.getValue()));
 
                     if (groupedSushi.containsKey(sushiName)) {
                         groupedSushi.put(sushiName, groupedSushi.get(sushiName) + 1);
@@ -50,6 +54,10 @@ public final class SumFormatter {
                     }
                 }
             }
+
+            customerOrderString.append(", доставка(" + deliveryPerUser + ")");
+            customerSum = customerSum.add(deliveryPerUser);
+
             sum = sum.add(customerSum);
 
             response.append(customerOrderString);
