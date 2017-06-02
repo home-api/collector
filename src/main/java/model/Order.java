@@ -45,6 +45,7 @@ public class Order extends BaseEntity {
     }
 
     public void addCustomerOrder(CustomerOrder customerOrder) {
+        deleteCustomerOrder(customerOrder.getName());
         customersOrders.add(customerOrder);
     }
 
