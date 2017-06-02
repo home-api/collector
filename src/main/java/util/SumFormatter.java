@@ -62,13 +62,13 @@ public final class SumFormatter {
 
             response.append(customerOrderString);
             response.append(" - ");
-            response.append(customerSum);
+            response.append(customerSum.stripTrailingZeros());
             response.append(" денег.");
             response.append("\n\n");
 
         }
         response.append("Итого: ");
-        response.append(sum);
+        response.append(sum.stripTrailingZeros());
         response.append(" денег");
         response.append("\n");
 
