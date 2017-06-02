@@ -44,14 +44,6 @@ public class OrderDAOImpl extends BasicDAO<Order, String> implements OrderDAO {
     }
 
     @Override
-    public boolean deleteOrder(String customer) {
-        Order order = getCurrentOrder();
-        boolean wasDeleted = order.deleteCustomerOrder(customer);
-        saveOrder(order);
-        return wasDeleted;
-    }
-
-    @Override
     public boolean deleteAllOrders() {
         datastore.delete(getCurrentOrder());
         return true;

@@ -29,7 +29,7 @@ public interface OrderService {
      * @param customer customer name
      * @return customer orders
      */
-    List<Map<String, Double>> getCustomerOrders(String customer);
+    List<Map<String, Double>> getCustomerOrder(String customer);
 
     /**
      * Deletes entire order (all ordered items) for the specified customer.

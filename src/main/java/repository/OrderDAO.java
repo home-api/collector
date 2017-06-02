@@ -28,14 +28,6 @@ public interface OrderDAO {
     boolean saveOrder(Order order);
 
     /**
-     * Remove entire order (all ordered items) for the specified customer.
-     *
-     * @param customer sutomer name
-     * @return whether order has been removed
-     */
-    boolean deleteOrder(String customer);
-
-    /**
      * Delete all orders. This operation is now redundant and should be deleted in the future.
      *
      * @return whether all orders have been deleted.

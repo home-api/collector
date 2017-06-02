@@ -40,10 +40,10 @@ public class OrderServiceImpl implements OrderService {
         if (customerOrder == null) {
             customerOrder = new CustomerOrder();
             customerOrder.setName(customer);
+            order.getCustomersOrders().add(customerOrder);
         }
 
         customerOrder.getOrders().add(createCustomerOrderItem(orderItem));
-        order.getCustomersOrders().add(customerOrder);
 
         LOGGER.info(orderItem + " with price  has been added for customer " + customer);
 
@@ -84,10 +84,20 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Map<String, Double>> getCustomerOrders(String customer) {
+    public List<Map<String, Double>> getCustomerOrder(String customer) {
         List<Map<String, Double>> customerOrdersItems = new ArrayList<>();
-        CustomerOrder order = orderDAO.getCurrentOrder().getCustomerOrder(customer);
-        for (OrderItem orderItem : order.getOrders()) {
+
+        Order order = orderDAO.getCurrentOrder();
+        if (order == null) {
+            return customerOrdersItems;
+        }
+
+        CustomerOrder customerOrder = order.getCustomerOrder(customer);
+        if (customerOrder == null) {
+            return customerOrdersItems;
+        }
+
+        for (OrderItem orderItem : customerOrder.getOrders()) {
             Map<String, Double> customerOrderItem = new HashMap<>();
             customerOrderItem.put(orderItem.getItem(), orderItem.getPrice());
             customerOrdersItems.add(customerOrderItem);
@@ -97,14 +107,27 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public boolean deleteOrder(String customer) {
-        return orderDAO.deleteOrder(customer);
+        Order order = orderDAO.getCurrentOrder();
+        if (order == null) {
+            return false;
+        }
+
+        boolean wasDeleted = order.deleteCustomerOrder(customer);
+        orderDAO.saveOrder(order);
+        return wasDeleted;
     }
 
     @Override
     public boolean deleteOrderItem(String customer, String orderItem) {
         Order order = orderDAO.getCurrentOrder();
         boolean wasDeleted = order.deleteCustomerOrderItem(customer, orderItem);
+
+        if (order.getCustomerOrder(customer).isEmpty()) {
+            order.deleteCustomerOrder(customer);
+        }
+
         orderDAO.saveOrder(order);
+
         return wasDeleted;
     }
 
@@ -122,6 +145,10 @@ public class OrderServiceImpl implements OrderService {
         }
 
         Order currentOrder = orderDAO.getCurrentOrder();
+        if (currentOrder == null) {
+            currentOrder = new Order();
+            currentOrder.setDate(LocalDate.now());
+        }
         currentOrder.addCustomerOrder(customerOrder.getCustomerOrder(customer));
         orderDAO.saveOrder(currentOrder);
 

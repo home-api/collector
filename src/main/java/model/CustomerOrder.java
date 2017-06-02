@@ -13,7 +13,7 @@ public class CustomerOrder implements Comparable<CustomerOrder> {
     @Embedded
     private List<OrderItem> orders = new ArrayList<>();
 
-    boolean deleteItem(String orderItem) {
+    public boolean deleteItem(String orderItem) {
         for (Iterator<OrderItem> iterator = orders.iterator(); iterator.hasNext();) {
             if (iterator.next().getItem().equals(orderItem)) {
                 iterator.remove();
@@ -21,6 +21,10 @@ public class CustomerOrder implements Comparable<CustomerOrder> {
             }
         }
         return false;
+    }
+
+    public boolean isEmpty() {
+        return orders.isEmpty();
     }
 
     public String getName() {

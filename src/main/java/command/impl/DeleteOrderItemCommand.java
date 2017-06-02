@@ -16,8 +16,7 @@ public class DeleteOrderItemCommand implements Command {
 
     @Override
     public SendMessage execute(String orderItem, Message message) throws Exception {
-        boolean hasBeenRemoved = orderService.deleteOrderItem(message.getChat().getFirstName().trim(), orderItem);
-        String responseText = hasBeenRemoved ? orderItem + " был удален" : orderItem + " не был удален";
+        orderService.deleteOrderItem(message.getChat().getFirstName().trim(), orderItem);
         return removeOrderItemMenuCommand.execute(null, message);
     }
 }

@@ -9,7 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -32,7 +32,7 @@ public class Menu {
     }
 
     private void initializeMenu() throws Exception {
-        menu = new HashMap<>();
+        menu = new LinkedHashMap<>();
 
         File menuFolder = new File(MENU_FILE_NAME);
         if (!menuFolder.exists()) {

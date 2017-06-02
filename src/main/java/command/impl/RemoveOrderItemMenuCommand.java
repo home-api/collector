@@ -9,7 +9,6 @@ import org.telegram.telegrambots.api.objects.replykeyboard.buttons.InlineKeyboar
 import service.OrderService;
 import util.Emoji;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,7 +30,7 @@ public class RemoveOrderItemMenuCommand implements Command {
         response.setReplyMarkup(replyMarkup);
 
         String userName = message.getChat().getFirstName().trim();
-        List<Map<String, Double>> userOrders = orderService.getCustomerOrders(userName);
+        List<Map<String, Double>> userOrders = orderService.getCustomerOrder(userName);
 
         for (Map<String, Double> customerOrder : userOrders) {
             InlineKeyboardButton button = new InlineKeyboardButton();
@@ -41,7 +40,7 @@ public class RemoveOrderItemMenuCommand implements Command {
             keyboard.add(Collections.singletonList(button));
         }
 
-        response.setText("Ваш заказ: ");
+        response.setText("Ваш заказ: " + (userOrders.isEmpty() ? "<пусто>" : ""));
         response.setChatId(message.getChatId());
         return response;
     }

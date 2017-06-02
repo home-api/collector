@@ -4,16 +4,16 @@ import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.List;
 
 @Entity
 public class Order extends BaseEntity {
 
     private LocalDate date;
     @Embedded
-    private Set<CustomerOrder> customersOrders = new TreeSet<>();
+    private List<CustomerOrder> customersOrders = new ArrayList<>();
 
     public CustomerOrder getCustomerOrder(String customer) {
         for (CustomerOrder customerOrder : customersOrders) {
@@ -56,11 +56,11 @@ public class Order extends BaseEntity {
         this.date = date;
     }
 
-    public Set<CustomerOrder> getCustomersOrders() {
+    public List<CustomerOrder> getCustomersOrders() {
         return customersOrders;
     }
 
-    public void setCustomersOrders(Set<CustomerOrder> customersOrders) {
+    public void setCustomersOrders(List<CustomerOrder> customersOrders) {
         this.customersOrders = customersOrders;
     }
 

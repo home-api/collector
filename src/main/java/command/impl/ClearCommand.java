@@ -17,7 +17,7 @@ public class ClearCommand implements Command {
     public SendMessage execute(String commandText, Message message) throws Exception {
         String responseText = orderService.deleteOrder(message.getFrom().getFirstName().trim())
                 ? "Ваши заказы были удалены"
-                : "Хм, что-то не так..";
+                : "Сначала закажЫ!11адын";
         return createSendMessage(responseText, message);
     }
 }
