@@ -21,20 +21,19 @@ public class Menu {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Menu.class);
 
-    private static final String MENU_FILE_NAME = "menu";
     private static final String MENU_FILE_EXTENSION = "properties";
     private static final String MENU_FILE_ENCODING = "UTF-8";
 
     private Map<String, Map<String, Double>> menu;
 
     public Menu() throws Exception {
-        initializeMenu();
+        initializeMenu(System.getProperty("menu"));
     }
 
-    private void initializeMenu() throws Exception {
+    private void initializeMenu(String menuPath) throws Exception {
         menu = new LinkedHashMap<>();
 
-        File menuFolder = new File(MENU_FILE_NAME);
+        File menuFolder = new File(menuPath);
         if (!menuFolder.exists()) {
             LOGGER.error("Menu folder does not exist: " + menuFolder.getAbsolutePath());
             throw new IllegalStateException("Menu folder does not exist" + menuFolder.getAbsolutePath());
