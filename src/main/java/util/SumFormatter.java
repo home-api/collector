@@ -29,8 +29,7 @@ public final class SumFormatter {
                         + DateTimeFormatter.ofPattern("d MMMM yyyy", new Locale("ru")).format(LocalDate.now())
                         + "\n\n");
         Set<Map.Entry<String, List<Map<String, Double>>>> userOrders = allOrders.entrySet();
-        BigDecimal deliveryPerUser =
-                new BigDecimal(DELIVERY_PRICE / userOrders.size()).setScale(2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal deliveryPerUser = calculateUserDelivery(DELIVERY_PRICE, userOrders.size());
         BigDecimal sum = new BigDecimal(0.0).setScale(2, BigDecimal.ROUND_HALF_UP);
         Map<String, Integer> groupedSushi = new HashMap<>();
         for (Map.Entry<String, List<Map<String, Double>>> userOrder : userOrders) {
@@ -79,6 +78,10 @@ public final class SumFormatter {
 
         LOGGER.info("Orders sum has been calculated: " + sum);
         return response.toString();
+    }
+
+    static BigDecimal calculateUserDelivery(Double delivery, int users) {
+        return new BigDecimal(Math.ceil(delivery * 100 / users) / 100).setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
 }
