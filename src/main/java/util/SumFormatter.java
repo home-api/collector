@@ -81,7 +81,8 @@ public final class SumFormatter {
     }
 
     static BigDecimal calculateUserDelivery(Double delivery, int users) {
-        return new BigDecimal(Math.ceil(delivery * 100 / users) / 100).setScale(2, BigDecimal.ROUND_HALF_UP);
+        double roundedDeliveryPrice = users > 0 ? Math.ceil(delivery * 100 / users) / 100 : delivery;
+        return new BigDecimal(roundedDeliveryPrice).setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
 }
