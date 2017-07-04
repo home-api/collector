@@ -35,13 +35,11 @@ public class CollectorBot extends TelegramLongPollingBot {
     @Inject
     private Map<String, Command> commands;
 
-    @Inject
-    @Named("token")
-    private String token;
+    private final String token;
 
     @Inject
     @Named("doCleaning")
-    private Boolean doCleaning;
+    private Boolean doCleaning = false;
 
     @Inject
     private OrderService orderService;
@@ -50,8 +48,18 @@ public class CollectorBot extends TelegramLongPollingBot {
     @Named("menu")
     private Command menuCommand;
 
+    @Inject
+    public CollectorBot(@javax.inject.Named("token") String token) {
+        this.token = token;
+    }
+
     @Override
     public void onUpdateReceived(Update update) {
+        // ignore group messages
+        if (update.getMessage().getChat().isGroupChat()) {
+            return;
+        }
+
         cleanOutdatedOrders();
 
         try {
@@ -170,7 +178,7 @@ public class CollectorBot extends TelegramLongPollingBot {
     }
 
     public String getBotUsername() {
-        return "";
+        return "SushiBot";
     }
 
     public String getBotToken() {
