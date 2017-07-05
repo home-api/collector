@@ -2,6 +2,7 @@ package util;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +28,8 @@ public class Menu {
     private Map<String, Map<String, Double>> menu;
 
     public Menu() throws Exception {
-        initializeMenu(System.getProperty("menu"));
+        String menu = System.getProperty("menu");
+        initializeMenu(StringUtils.isNotEmpty(menu) ? menu : ".");
     }
 
     private void initializeMenu(String menuPath) throws Exception {

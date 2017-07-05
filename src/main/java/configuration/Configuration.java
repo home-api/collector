@@ -25,17 +25,14 @@ import util.Menu;
 public class Configuration extends AbstractModule {
 
     private String token;
-    private Boolean doCleaning;
 
-    public Configuration(String token, Boolean doCleaning) {
+    public Configuration(String token) {
         this.token = token;
-        this.doCleaning = doCleaning;
     }
 
     @Override
     protected void configure() {
         bindConstant().annotatedWith(Names.named("token")).to(token);
-        bindConstant().annotatedWith(Names.named("doCleaning")).to(doCleaning);
 
         MongoClient mongoClient = new MongoClient("localhost", 27017);
 

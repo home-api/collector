@@ -38,10 +38,6 @@ public class CollectorBot extends TelegramLongPollingBot {
     private final String token;
 
     @Inject
-    @Named("doCleaning")
-    private Boolean doCleaning = false;
-
-    @Inject
     private OrderService orderService;
 
     @Inject
@@ -59,8 +55,6 @@ public class CollectorBot extends TelegramLongPollingBot {
         if (update.getMessage().getChat().isGroupChat()) {
             return;
         }
-
-        cleanOutdatedOrders();
 
         try {
             if (update.hasInlineQuery()) {
@@ -83,15 +77,6 @@ public class CollectorBot extends TelegramLongPollingBot {
             LOGGER.error(e.getMessage(), e);
         }
 
-    }
-
-    private void cleanOutdatedOrders() {
-        LocalDateTime currentDate = LocalDateTime.now();
-        if (doCleaning && currentDate.getDayOfYear() != date.getDayOfYear()) {
-            LOGGER.info("Removing all orders..");
-            orderService.deleteAllOrders();
-            date = currentDate;
-        }
     }
 
     private void handleInlineQuery(InlineQuery inlineQuery) throws Exception {
