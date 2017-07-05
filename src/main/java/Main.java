@@ -7,7 +7,7 @@ import org.telegram.telegrambots.TelegramBotsApi;
 
 public class Main {
 
-    private static final int ARGUMENTS_REQUIRED_COUNT = 2;
+    private static final int ARGUMENTS_REQUIRED_COUNT = 1;
 
     public static void main(String[] args) throws Exception {
         if (args.length != ARGUMENTS_REQUIRED_COUNT) {
@@ -15,8 +15,7 @@ public class Main {
         }
 
         String token = args[0];
-        Boolean doCleaning = Boolean.parseBoolean(args[1]);
-        Injector injector = Guice.createInjector(new Configuration(token, doCleaning));
+        Injector injector = Guice.createInjector(new Configuration(token));
 
         ApiContextInitializer.init();
         TelegramBotsApi api = new TelegramBotsApi();

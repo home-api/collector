@@ -35,13 +35,7 @@ public class CollectorBot extends TelegramLongPollingBot {
     @Inject
     private Map<String, Command> commands;
 
-    @Inject
-    @Named("token")
-    private String token;
-
-    @Inject
-    @Named("doCleaning")
-    private Boolean doCleaning;
+    private final String token;
 
     @Inject
     private OrderService orderService;
@@ -50,9 +44,17 @@ public class CollectorBot extends TelegramLongPollingBot {
     @Named("menu")
     private Command menuCommand;
 
+    @Inject
+    public CollectorBot(@javax.inject.Named("token") String token) {
+        this.token = token;
+    }
+
     @Override
     public void onUpdateReceived(Update update) {
-        cleanOutdatedOrders();
+        // ignore group messages
+        if (update.getMessage().getChat().isGroupChat()) {
+            return;
+        }
 
         try {
             if (update.hasInlineQuery()) {
@@ -75,15 +77,6 @@ public class CollectorBot extends TelegramLongPollingBot {
             LOGGER.error(e.getMessage(), e);
         }
 
-    }
-
-    private void cleanOutdatedOrders() {
-        LocalDateTime currentDate = LocalDateTime.now();
-        if (doCleaning && currentDate.getDayOfYear() != date.getDayOfYear()) {
-            LOGGER.info("Removing all orders..");
-            orderService.deleteAllOrders();
-            date = currentDate;
-        }
     }
 
     private void handleInlineQuery(InlineQuery inlineQuery) throws Exception {
@@ -170,7 +163,7 @@ public class CollectorBot extends TelegramLongPollingBot {
     }
 
     public String getBotUsername() {
-        return "";
+        return "SushiBot";
     }
 
     public String getBotToken() {
